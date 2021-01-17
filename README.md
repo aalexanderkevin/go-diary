@@ -71,3 +71,6 @@ Authorization: Bearer {token}
 
 ## Logs
 - To see logs and errors, run `docker-compose logs -f`
+
+## Diagram
+![Diagram](http://www.plantuml.com/plantuml/png/SoWkIImgAStDuKf9B4bCIYnELL3ohGmEz55II2nMI4dYIilC0Geb5XGeQBZdvoJcfMk2PO02I3g2KbCoYy7YHI0M5nT8lQuTK3-41MH291nIyrA0bW40)

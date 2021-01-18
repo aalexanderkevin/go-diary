@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, saveErr.Error())
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"token": token.Token})
+	c.JSON(http.StatusOK, &models.JWT{Token: token.Token})
 }
 
 func saveUUID(token *models.TokenDetails) error {

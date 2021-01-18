@@ -16,17 +16,17 @@ func GetDiary(c *gin.Context) {
 
 	token, err := helpers.ExtractToken(c.Request)
 	if err != nil {
-		c.JSON(http.StatusForbidden, map[string]string{"error_message": err.Error()})
+		c.JSON(http.StatusForbidden, &models.Response{Message: err.Error()})
 		return
 	}
 
 	uuid, err := db.FetchUUID(token.Username)
 	if err != nil {
-		c.JSON(http.StatusForbidden, map[string]string{"error_message": "Your session was expired"})
+		c.JSON(http.StatusForbidden, &models.Response{Message: "Your session was expired"})
 		return
 	}
 	if uuid != token.UUID {
-		c.JSON(http.StatusForbidden, map[string]string{"error_message": "Your session invalid"})
+		c.JSON(http.StatusForbidden, &models.Response{Message: "Your session invalid"})
 		return
 	}
 
@@ -36,7 +36,7 @@ func GetDiary(c *gin.Context) {
 	// Get the list of diary from mysql
 	rows, err := db.Query("SELECT content, date FROM diary WHERE YEAR(date)=? AND QUARTER(date)=?", year, quarter)
 	if err != nil {
-		c.JSON(http.StatusNotFound, map[string]string{"error_message": "There is no diary"})
+		c.JSON(http.StatusNotFound, &models.Response{Message: "There is no diary"})
 		return
 	}
 
@@ -44,7 +44,7 @@ func GetDiary(c *gin.Context) {
 	var d models.DiaryContent
 	for rows.Next() {
 		if err := rows.Scan(&d.Content, &d.Date); err != nil {
-			c.JSON(http.StatusInternalServerError, map[string]string{"error_message": "Internal Server Error"})
+			c.JSON(http.StatusInternalServerError, &models.Response{Message: "Internal Server Error"})
 			return
 		}
 		res = append(res, d)

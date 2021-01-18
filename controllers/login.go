@@ -15,7 +15,7 @@ import (
 func Login(c *gin.Context) {
 	var u models.User
 	if err := c.ShouldBindJSON(&u); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, map[string]string{"error_message": "invalid JSON format"})
+		c.JSON(http.StatusUnprocessableEntity, &models.Response{Message: "invalid JSON format"})
 		return
 	}
 
@@ -32,17 +32,17 @@ func Login(c *gin.Context) {
 	err := row.Scan(&hash, &username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			c.JSON(http.StatusBadRequest, map[string]string{"error_message": "Invalid username or email"})
+			c.JSON(http.StatusBadRequest, &models.Response{Message: "Invalid username or email"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, map[string]string{"error_message": "Internal Server Error"})
+		c.JSON(http.StatusInternalServerError, &models.Response{Message: "Internal Server Error"})
 		return
 	}
 
 	// Check the password
 	compareError := h.Compare(hash, password)
 	if compareError != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error_message": compareError.Error()})
+		c.JSON(http.StatusBadRequest, &models.Response{Message: compareError.Error()})
 		return
 	}
 

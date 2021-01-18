@@ -16,7 +16,7 @@ func InsertUser(c *gin.Context) {
 	h := helpers.Hash{}
 
 	if err := c.ShouldBindJSON(&u); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, map[string]string{"error_message": "Invalid JSON format"})
+		c.JSON(http.StatusUnprocessableEntity, &models.Response{Message: "Invalid JSON format"})
 		return
 	}
 
@@ -31,12 +31,12 @@ func InsertUser(c *gin.Context) {
 
 	generatedHash, generateError := h.Generate(password)
 	if generateError != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error_message": generateError.Error()})
+		c.JSON(http.StatusBadRequest, &models.Response{Message: generateError.Error()})
 		return
 	}
 
 	if err := helpers.VerifyPassword(password); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error_message": err.Error()})
+		c.JSON(http.StatusBadRequest, &models.Response{Message: err.Error()})
 		return
 	}
 
@@ -51,11 +51,11 @@ func InsertUser(c *gin.Context) {
 	if err != nil {
 		if driverErr, ok := err.(*mysql.MySQLError); ok {
 			if driverErr.Number == 1062 {
-				c.JSON(http.StatusConflict, map[string]string{"error_message": "username already exist"})
+				c.JSON(http.StatusConflict, &models.Response{Message: "username already exist"})
 				return
 			}
 		}
-		c.JSON(http.StatusBadGateway, map[string]string{"error_message": err.Error()})
+		c.JSON(http.StatusBadGateway, &models.Response{Message: err.Error()})
 		return
 	}
 

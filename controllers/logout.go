@@ -15,7 +15,7 @@ func Logout(c *gin.Context) {
 	token := &models.TokenDetails{}
 	token, err := helpers.ExtractToken(c.Request)
 	if err != nil {
-		c.JSON(http.StatusForbidden, map[string]string{"error_message": err.Error()})
+		c.JSON(http.StatusForbidden, &models.Response{Message: err.Error()})
 		return
 	}
 

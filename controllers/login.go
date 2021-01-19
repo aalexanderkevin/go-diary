@@ -11,17 +11,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Login service
+// Login godoc
+// @Summary login services
+// @Description Authenticates user and provides a JWT to Authorize API calls
+// @Tags login
+// @Accept json
+// @Produce json
+// @Param user body models.Login true "Login"
+// @Success 200 {object} models.JWT
+// @Failure 401 {object} models.ErrorResponse
+// @Router /login [post]
 func Login(c *gin.Context) {
-	var u models.User
-	if err := c.ShouldBindJSON(&u); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, &models.Response{Message: "invalid JSON format"})
+	var l models.Login
+	if err := c.ShouldBindJSON(&l); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, &models.ErrorResponse{Message: "invalid JSON format"})
 		return
 	}
 
 	var hash string
-	username := u.Username
-	password := u.Password
+	username := l.Username
+	password := l.Password
 	h := helpers.Hash{}
 	// Initialize db connection
 	db := db.Connect()
@@ -32,17 +41,17 @@ func Login(c *gin.Context) {
 	err := row.Scan(&hash, &username)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			c.JSON(http.StatusBadRequest, &models.Response{Message: "Invalid username or email"})
+			c.JSON(http.StatusBadRequest, &models.ErrorResponse{Message: "Invalid username or email"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, &models.Response{Message: "Internal Server Error"})
+		c.JSON(http.StatusInternalServerError, &models.ErrorResponse{Message: "Internal Server Error"})
 		return
 	}
 
 	// Check the password
 	compareError := h.Compare(hash, password)
 	if compareError != nil {
-		c.JSON(http.StatusBadRequest, &models.Response{Message: compareError.Error()})
+		c.JSON(http.StatusBadRequest, &models.ErrorResponse{Message: compareError.Error()})
 		return
 	}
 

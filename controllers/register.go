@@ -10,13 +10,22 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-// Insert user credentials to db
+// Register godoc
+// @Summary Register services
+// @Description Register user
+// @Tags register
+// @Accept json
+// @Produce json
+// @Param user body models.User true "Register"
+// @Success 200 {object} models.Response
+// @Failure 401 {object} models.ErrorResponse
+// @Router /register [post]
 func InsertUser(c *gin.Context) {
 	var u models.User
 	h := helpers.Hash{}
 
 	if err := c.ShouldBindJSON(&u); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, &models.Response{Message: "Invalid JSON format"})
+		c.JSON(http.StatusUnprocessableEntity, &models.ErrorResponse{Message: "Invalid JSON format"})
 		return
 	}
 
@@ -31,12 +40,12 @@ func InsertUser(c *gin.Context) {
 
 	generatedHash, generateError := h.Generate(password)
 	if generateError != nil {
-		c.JSON(http.StatusBadRequest, &models.Response{Message: generateError.Error()})
+		c.JSON(http.StatusBadRequest, &models.ErrorResponse{Message: generateError.Error()})
 		return
 	}
 
 	if err := helpers.VerifyPassword(password); err != nil {
-		c.JSON(http.StatusBadRequest, &models.Response{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, &models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -51,14 +60,14 @@ func InsertUser(c *gin.Context) {
 	if err != nil {
 		if driverErr, ok := err.(*mysql.MySQLError); ok {
 			if driverErr.Number == 1062 {
-				c.JSON(http.StatusConflict, &models.Response{Message: "username already exist"})
+				c.JSON(http.StatusConflict, &models.ErrorResponse{Message: "username already exist"})
 				return
 			}
 		}
-		c.JSON(http.StatusBadGateway, &models.Response{Message: err.Error()})
+		c.JSON(http.StatusBadGateway, &models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"status": "Success"})
+	c.JSON(http.StatusOK, &models.Response{Message: "Success"})
 	return
 }

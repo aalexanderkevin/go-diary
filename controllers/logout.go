@@ -10,22 +10,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// logout
+// Logout godoc
+// @Security bearerAuth
+// @Summary Logout services
+// @Description Logout user
+// @Tags logout
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Response
+// @Failure 401 {object} models.ErrorResponse
+// @Router /logout [post]
 func Logout(c *gin.Context) {
 	token := &models.TokenDetails{}
 	token, err := helpers.ExtractToken(c.Request)
 	if err != nil {
-		c.JSON(http.StatusForbidden, &models.Response{Message: err.Error()})
+		c.JSON(http.StatusForbidden, &models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	err = deleteRedisToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, map[string]string{"status": err.Error()})
+		c.JSON(http.StatusUnauthorized, &models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"status": "Success Logout"})
+	c.JSON(http.StatusOK, &models.Response{Message: "Success Logout"})
 }
 
 // Delete token from Redis

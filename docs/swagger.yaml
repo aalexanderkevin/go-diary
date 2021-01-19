@@ -1,0 +1,197 @@
+definitions:
+  models.Diary:
+    properties:
+      content:
+        example: This is content of the diary
+        type: string
+      date:
+        example: "2021-01-12"
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error_message:
+        example: invalid JSON format
+        type: string
+    type: object
+  models.JWT:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTA4OTY5MjYsInVzZXJuYW1lIjoibGFsYSIsInV1aWQiOiI5YTA3YTIwYi01MTYwLTQ4N2ItYTBlYS1iMzBkZjM3NmMyMjcifQ.3kMJSHB-pMSjRovvVPU1O1p6Y04qgLDaJKr1ONPtkvY
+        type: string
+    type: object
+  models.Login:
+    properties:
+      password:
+        example: P@ssw0rd!23
+        type: string
+      username:
+        example: lala
+        type: string
+    type: object
+  models.Response:
+    properties:
+      status:
+        example: Success
+        type: string
+    type: object
+  models.User:
+    properties:
+      birthday:
+        example: "1996-04-14"
+        type: string
+      email:
+        example: lala@gmailcom
+        type: string
+      name:
+        example: lala lili
+        type: string
+      password:
+        example: P@ssw0rd!23
+        type: string
+      username:
+        example: lala
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /diary:
+    post:
+      consumes:
+      - application/json
+      description: Create Specific Diary by Date
+      parameters:
+      - description: Create Diary
+        in: body
+        name: diary
+        required: true
+        schema:
+          $ref: '#/definitions/models.Diary'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - bearerAuth: []
+      summary: Diary services
+      tags:
+      - diary
+  /diary/{year}/{quarter}:
+    get:
+      consumes:
+      - application/json
+      description: Get Content of the Diary
+      parameters:
+      - description: Year
+        in: path
+        name: year
+        required: true
+        type: integer
+      - description: Quarter
+        in: path
+        name: quarter
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Diary'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - bearerAuth: []
+      summary: Diary services
+      tags:
+      - diary
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates user and provides a JWT to Authorize API calls
+      parameters:
+      - description: Login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JWT'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: login services
+      tags:
+      - login
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - bearerAuth: []
+      summary: Logout services
+      tags:
+      - logout
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register user
+      parameters:
+      - description: Register
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register services
+      tags:
+      - register
+securityDefinitions:
+  bearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

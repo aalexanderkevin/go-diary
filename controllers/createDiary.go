@@ -10,28 +10,38 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Create Diary
+// Create Diary godoc
+// @Security bearerAuth
+// @Summary Diary services
+// @Description Create Specific Diary by Date
+// @Tags diary
+// @Accept json
+// @Produce json
+// @Param diary body models.Diary true "Create Diary"
+// @Success 200 {object} models.Response
+// @Failure 401 {object} models.ErrorResponse
+// @Router /diary [post]
 func CreateDiary(c *gin.Context) {
 	var d models.Diary
 
 	if err := c.ShouldBindJSON(&d); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, &models.Response{Message: "Invalid JSON format"})
+		c.JSON(http.StatusUnprocessableEntity, &models.ErrorResponse{Message: "Invalid JSON format"})
 		return
 	}
 
 	token, err := helpers.ExtractToken(c.Request)
 	if err != nil {
-		c.JSON(http.StatusForbidden, &models.Response{Message: err.Error()})
+		c.JSON(http.StatusForbidden, &models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	uuid, err := db.FetchUUID(token.Username)
 	if err != nil {
-		c.JSON(http.StatusForbidden, &models.Response{Message: "Your session was expired"})
+		c.JSON(http.StatusForbidden, &models.ErrorResponse{Message: "Your session was expired"})
 		return
 	}
 	if uuid != token.UUID {
-		c.JSON(http.StatusForbidden, &models.Response{Message: "Your session invalid"})
+		c.JSON(http.StatusForbidden, &models.ErrorResponse{Message: "Your session invalid"})
 		return
 	}
 
@@ -51,9 +61,9 @@ func CreateDiary(c *gin.Context) {
 			d.Date,
 		)
 		if err != nil {
-			c.JSON(http.StatusBadGateway, &models.Response{Message: err.Error()})
+			c.JSON(http.StatusBadGateway, &models.ErrorResponse{Message: err.Error()})
 			return
 		}
 	}
-	c.JSON(http.StatusOK, map[string]string{"status": "Diary added"})
+	c.JSON(http.StatusOK, &models.Response{Message: "Diary added"})
 }

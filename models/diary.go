@@ -2,7 +2,6 @@ package models
 
 // Model Diary
 type Diary struct {
-	Username string `json:"username"`
-	Content  string `json:"content"`
-	Date     string `json:"date"`
+	Content string `json:"content" example:"This is content of the diary"`
+	Date    string `json:"date" example:"2021-01-12"`
 }

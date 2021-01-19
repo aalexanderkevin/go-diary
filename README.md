@@ -7,10 +7,10 @@
 Run docker compose and build `docker-compose up --build -d` (only needed 1st time)
 Next time you can just run `docker-compose up -d`
 
-Docker compose will run 3 containers: `app`, `mysql`, and 'redis' container
+Docker compose will run 3 containers: `app`, `mysql`, and `redis` container
 
 ### API
-#### localhost:8080/register
+#### localhost:8080/api/v1/register
 * `POST` : Register user
 ```
 body:
@@ -23,7 +23,7 @@ body:
 }
 ```
 
-#### localhost:8080/login
+#### localhost:8080/api/v1/login
 * `POST` : login with response token
 ```
 body:
@@ -38,14 +38,22 @@ response:
 }
 ```
 
-#### localhost:8080/diary/{year}/{quarter}
+#### localhost:8080/api/v1/diary/{year}/{quarter}
 * `GET` : get diary content
 ```
 header:
 Authorization: Bearer {token}
+
+response:
+[
+  {
+    "content": "this is content",
+    "date": "2021-05-19"
+  }
+]
 ```
 
-#### localhost:8080/diary
+#### localhost:8080/api/v1/diary
 * `POST` : create diary
 ```
 header:
@@ -56,13 +64,23 @@ body:
     "content": "This is my diary",
     "date": "2021-07-19"
 }
+
+reponse:
+{
+    "status": "Diary added"
+}
 ```
 
-#### localhost:8080/logout
+#### localhost:8080/api/v1/logout
 * `POST` : logout, to make token invalid
 ```
 header:
 Authorization: Bearer {token}
+
+response:
+{
+    "status": "Success"
+}
 ```
   
 ### Stopping

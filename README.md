@@ -59,7 +59,7 @@ body:
 ```
 
 #### localhost:8080/logout
-* `DELETE` : logout, to make token invalid
+* `POST` : logout, to make token invalid
 ```
 header:
 Authorization: Bearer {token}

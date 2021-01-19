@@ -45,7 +45,7 @@ func main() {
 		}
 		logout := apiRoutes.Group("/logout")
 		{
-			logout.DELETE("", controllers.Logout)
+			logout.POST("", controllers.Logout)
 		}
 	}
 
